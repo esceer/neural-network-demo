@@ -21,11 +21,6 @@ class Road {
         ];
     }
 
-    getLaneCenter(laneIndex) {
-        const laneWidth = this.width / this.numOfLanes;
-        return this.left + laneWidth / 2 + laneIndex * laneWidth;
-    }
-
     draw(ctx) {
         ctx.lineWidth = 5;
         ctx.strokeStyle = "white";
@@ -51,5 +46,10 @@ class Road {
             ctx.lineTo(border[1].x, border[1].y);
             ctx.stroke();
         });
+    }
+
+    getLaneCenter(laneIndex) {
+        const laneWidth = this.width / this.numOfLanes;
+        return this.left + laneWidth / 2 + laneIndex * laneWidth;
     }
 }
