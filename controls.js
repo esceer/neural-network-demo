@@ -1,11 +1,20 @@
 class Controls {
-    constructor() {
+    constructor(driver) {
         this.forward = false;
         this.left = false;
         this.right = false;
         this.reverse = false;
 
-        this.#addKeyboardListeners();
+        switch (driver) {
+            case Driver.PLAYER:
+                this.#addKeyboardListeners();
+                break;
+            case Driver.NPC:
+                this.forward = true;
+                break;
+            case Driver.FINISH:
+                break;
+        }
     }
 
     #addKeyboardListeners() {
