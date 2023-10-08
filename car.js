@@ -1,4 +1,5 @@
 const Driver = {
+    AI: "ai",
     PLAYER: "player",
     NPC: "npc",
     FINISH: "finish",
@@ -13,6 +14,7 @@ class Car {
 
         this.color = color;
         this.driver = driver;
+        this.useBrain = driver === Driver.AI;
 
         this.speed = 0;
         this.acceleration = 0.2;
@@ -23,8 +25,11 @@ class Car {
 
         this.damaged = false;
 
-        if (this.driver === Driver.PLAYER) {
+        if (Array.of(Driver.PLAYER, Driver.AI).includes(this.driver)) {
             this.sensor = new Sensor(this);
+            this.brain = new NeuralNetwork(
+                [this.sensor.rayCount, 6, 4]
+            );
         }
         this.controls = new Controls(driver);
     }
@@ -37,6 +42,22 @@ class Car {
         }
         if (this.sensor) {
             this.sensor.update(roadBorders, traffic);
+            const distances = this.sensor.readings.map(
+                // in order to neurons receive lower values if the object is far away
+                // and higher values (close to 1) if obstacle is close-by
+                s => s == null
+                    ? 0
+                    : 1 - s.distance
+            );
+            const outputs = NeuralNetwork.feedForward(distances, this.brain);
+            console.log(outputs);
+
+            if (this.useBrain) {
+                this.controls.forward = outputs[0];
+                this.controls.left = outputs[1];
+                this.controls.right = outputs[2];
+                this.controls.reverse = outputs[3];
+            }
         }
     }
 
